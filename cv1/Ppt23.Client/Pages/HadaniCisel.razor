@@ -1,0 +1,44 @@
+﻿@page "/hra"
+<h3>Hádání čísel</h3>
+<input type="number" @bind-value="hadaneCislo" @bind-value:event="oninput" />
+<button @onclick="Hadam">Hádám</button>
+
+<p>Hadane cislo je: @hadaneCislo</p>
+
+<p>Nahodne cislo je: @randomNumber</p>
+
+<p>@oznameni</p>
+
+<button id="myButton" onclick="location.reload()">Nová hra</button>
+
+
+@code {
+    int hadaneCislo = 1;
+
+    private Random random = new Random();
+    private int randomNumber = 0;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        randomNumber = random.Next(1, 101);
+    }
+    string oznameni = "";
+
+
+    public void Hadam()
+    {
+        if (hadaneCislo < randomNumber)
+        {
+            oznameni = "Zadejte vetsi cislo";
+        }
+        else if (hadaneCislo > randomNumber)
+        {
+            oznameni = "Zadejte mensi cislo";
+        }
+        else if (hadaneCislo == randomNumber)
+        {
+            oznameni = "Správně! Chceš hrat znova?";
+        }
+    }
+}
