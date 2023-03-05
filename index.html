@@ -8,8 +8,7 @@
     <link href="css/app.css" rel="stylesheet" />
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.6.0/umd/popper.min.js" integrity="sha512-BmM0/BQlqh02wuK5Gz9yrbe7VyIVwOzD1o40yi1IsTjriX/NGF37NyXHfmFzIlMmoSIBXgqDiG1VNU6kB5dBbA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,7 +36,18 @@
             }
         }
     </script>
-    
+    <script>
+        const activePage = window.location.pathname;
+        console.log("hello");
+        const navLinks = document.querySelectorAll('nav a').
+            forEach(link => {
+                if (link.href.includes(`${activePage}`)) {
+                    console.log(`${activePage}`);
+                }
+            })
+
+    </script>
+
 
 </body>
 
