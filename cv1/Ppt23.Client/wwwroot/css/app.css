@@ -53,4 +53,7 @@ h1:focus {
     100% {
         transform: rotate(360deg);
     }
-} 
+}
+.active {
+    background-color: red;
+}
