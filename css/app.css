@@ -54,6 +54,31 @@ h1:focus {
         transform: rotate(360deg);
     }
 }
-.active {
-    background-color: red;
+
+.nav-item:hover {
+    border-bottom: 2px solid #ff5b5b;
+}
+.navbar-expand-lg {
+    background-color: #F0F0F0;
+}
+.navbar-brand {
+    padding-left: 15px;
+}
+.vybaveni-vm {
+    column-count: 5;
+}
+.vybaveni-vm:hover {
+        background-color: #F0F0F0;
+    }
+button {
+    background-color: #ff5b5b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.bg-red {
+    background-color: #ffcccc;
 }
