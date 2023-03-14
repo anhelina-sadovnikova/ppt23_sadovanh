@@ -1,20 +1,48 @@
 ﻿<head>
     <meta charset="utf-8" />
 </head>
+@if (Vyb == null) return;
+@if (!Vyb.isInEditMode)
+{
+    <div class="p-2">@Vyb.Name</div>
+    <div class="p-2">@Vyb.dateBuy.ToString("yyyy-MM-dd")</div>
+    <div class="p-2">@Vyb.lastRev.ToString("yyyy-MM-dd")</div>
+    <div class="p-2">@(
+    (Vyb.IsRevNeeded) ? "Ano" : "Ne"
+    )</div>
 
-<div class="p-2">@Vyb.Name</div>
-<div class="p-2">@Vyb.dateBuy</div>
-<div class="p-2">@Vyb.lastRev.Year-@Vyb.lastRev.Month-@Vyb.lastRev.Day</div>
-<div class="p-2">@((Vyb.IsRevNeeded) ? "Ano" : "Ne")</div>
+    <div>
+        <button style="border-radius: 5px" @onclick="() => RevizeEventCallBack.InvokeAsync()">
+            <i class="material-icons">done</i>
+        </button>
 
-<div>
-    <button style="border-radius: 5px" @onclick="() => SmazEventCallback.InvokeAsync()">
-        Smazat
+        <button style="border-radius: 5px" @onclick="() => SmazEventCallback.InvokeAsync()">
+            <i class="material-icons">delete</i>
+        </button>
+        
+        <button style="border-radius: 5px" @onclick="() => Vyb.isInEditMode = true">
+            <i class="material-icons">edit</i>
+        </button>
+    </div>
+}
+else
+{
+        <div class="p-2">
+            <input type="text" @bind-value=@Vyb.Name />
+        </div>
+        <div class="p-2">
+            <input type="date" @bind-value=@Vyb.dateBuy />
+        </div>
+        <div class="p-2">
+            <input type="date" @bind-value=@Vyb.lastRev />
+        </div>
+        <div class="p-2">@((Vyb.IsRevNeeded) ? "Ano" : "Ne")
+
+        </div>
+    <button style="border-radius: 5px" @onclick="() => Vyb.isInEditMode = false">
+        OK
     </button>
-    <button style="border-radius: 5px" @onclick="() => RevizeEventCallBack.InvokeAsync()">
-        Provést revizi
-    </button>
-</div>
+}
 @code {
     [Parameter] public VybaveniVm? Vyb { get; set; }
     [Parameter] public EventCallback SmazEventCallback { get; set; }

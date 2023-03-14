@@ -24,7 +24,7 @@
                         </VybaveRow>
                     </div>
                 }
-                <div style="background-color: #F0F0F0">Pocet vybaveni: @seznamVybaveni.Count</div>
+                <div class="pocetVyb">Pocet vybaveni: @seznamVybaveni.Count</div>
                 <button style="border-radius: 5px" @onclick="noveVybaveni">Generovat nové vybavení</button>
             </div>
         </div>
@@ -42,14 +42,5 @@
     public void noveVybaveni()
     {
         VybaveniVm.PridatJednoVybaveni(seznamVybaveni);
-    }
-
-    public bool needRev(VybaveniVm vyb)
-    {
-        if (vyb.IsRevNeeded)
-        {
-            return true;
-        }
-        else return false;
     }
 }

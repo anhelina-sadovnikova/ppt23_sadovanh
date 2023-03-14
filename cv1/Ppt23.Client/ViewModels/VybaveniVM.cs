@@ -5,12 +5,13 @@ public class VybaveniVm
     public string Name { get; set; }
     public DateTime dateBuy { get; set; }
     public DateTime lastRev { get; set; }
-    public bool IsRevNeeded { get => lastRev + new TimeSpan(1095, 0, 0, 0) < DateTime.Now; }
+    public bool IsRevNeeded { get => DateTime.Now.AddYears(-2) < lastRev; }
+    public bool isInEditMode { get; set; } = false;
 
     public VybaveniVm()
     {
         DateTime od = new DateTime(2010, 01, 01);
-        this.Name = randName();
+        this.Name = RandomName(10);
         this.dateBuy = GetRandomDate(od, DateTime.Now);
         this.lastRev = GetRandomDate(dateBuy, DateTime.Now);
     }
@@ -30,22 +31,8 @@ public class VybaveniVm
         VybaveniVm vm = new VybaveniVm();
         list.Add(vm);
     }
-    public string randName()
-    {
-        Random rand = new Random();
-
-        String str = "abcdefghijklmnopqrstuvwxyz";
-        int size = 5;
-
-        String ran = "";
-
-        for (int i = 0; i < size; i++)
-        {
-            int x = rand.Next(26);
-            ran = ran + str[x];
-        }
-        return ran;
-    }
+    public static string RandomName(int length) =>
+           new(Enumerable.Range(0, length).Select(_ => (char)Random.Shared.Next('a', 'z')).ToArray());
 
     public static DateTime GetRandomDate(DateTime from, DateTime to)
     {
