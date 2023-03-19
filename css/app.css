@@ -65,7 +65,8 @@ h1:focus {
     padding-left: 15px;
 }
 .vybaveni-vm {
-    column-count: 5;
+    column-count: 6;
+    margin: 5px;
 }
 .vybaveni-vm:hover {
         background-color: #F0F0F0;
