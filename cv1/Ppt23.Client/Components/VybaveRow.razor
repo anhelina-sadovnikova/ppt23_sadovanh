@@ -1,14 +1,17 @@
 ﻿<head>
     <meta charset="utf-8" />
 </head>
-@if (Vyb == null) return;
-@if (!Vyb.isInEditMode)
+@using Microsoft.AspNetCore.Components.Forms
+
+@if (Item == null) return;
+@if (Item != null && !Item.isInEditMode)
 {
-    <div class="p-2">@Vyb.Name</div>
-    <div class="p-2">@Vyb.dateBuy.ToString("yyyy-MM-dd")</div>
-    <div class="p-2">@Vyb.lastRev.ToString("yyyy-MM-dd")</div>
-    <div class="p-2">@(
-    (Vyb.IsRevNeeded) ? "Ano" : "Ne"
+    <div>@Item.Name</div>
+    <div>@Item.Price</div>
+    <div>@Item.dateBuy.ToString("yyyy-MM-dd")</div>
+    <div>@Item.lastRev.ToString("yyyy-MM-dd")</div>
+    <div>@(
+            (Item.IsRevNeeded) ? "Ano" : "Ne"
     )</div>
 
     <div>
@@ -19,32 +22,83 @@
         <button style="border-radius: 5px" @onclick="() => SmazEventCallback.InvokeAsync()">
             <i class="material-icons">delete</i>
         </button>
-        
-        <button style="border-radius: 5px" @onclick="() => Vyb.isInEditMode = true">
+
+        <button style="border-radius: 5px" @onclick="() => TurnOnEdit()">
             <i class="material-icons">edit</i>
         </button>
     </div>
 }
-else
+else if (editingItem != null && editingItem.isInEditMode)
 {
-        <div class="p-2">
-            <input type="text" @bind-value=@Vyb.Name />
-        </div>
-        <div class="p-2">
-            <input type="date" @bind-value=@Vyb.dateBuy />
-        </div>
-        <div class="p-2">
-            <input type="date" @bind-value=@Vyb.lastRev />
-        </div>
-        <div class="p-2">@((Vyb.IsRevNeeded) ? "Ano" : "Ne")
+   <EditForm Model=editingItem OnValidSubmit="() => TurnOffEdit(true)">
+       <DataAnnotationsValidator />
+            <div>
+                <div>
+                    <InputText @bind-Value=@editingItem.Name />
+                    <ValidationMessage For="() => editingItem.Name" />
+                </div>
 
-        </div>
-    <button style="border-radius: 5px" @onclick="() => Vyb.isInEditMode = false">
-        OK
-    </button>
+                <div>
+                    <InputNumber @bind-Value=@editingItem.Price />
+                    <ValidationMessage For="() => editingItem.Price" />
+                </div>
+
+                <div>
+                    <InputDate @bind-Value=@editingItem.dateBuy />
+                </div>
+
+                <div>
+                    <InputDate @bind-Value=@editingItem.lastRev />
+                </div>
+
+                <div>@((editingItem.IsRevNeeded) ? "Ano" : "Ne")</div>
+                <div>
+                    <button type="submit">
+                      ok
+                    </button>
+                    <button type="button" @onclick="() => TurnOffEdit(false)">
+                      x
+                    </button>
+                </div>
+            </div>
+        </EditForm>
 }
 @code {
-    [Parameter] public VybaveniVm? Vyb { get; set; }
     [Parameter] public EventCallback SmazEventCallback { get; set; }
     [Parameter] public EventCallback RevizeEventCallBack { get; set; }
+    [Parameter] public EventCallback EditDoneCallback { get; set; }
+    VybaveniVm? editingItem;
+    VybaveniVm? _Item;
+    [Parameter]
+    public VybaveniVm? Item
+    {
+        get => _Item;
+        set
+        {
+            _Item = value;
+            if (value != null && value.isInEditMode)
+                TurnOnEdit();
+        }
+    }
+
+    private void TurnOnEdit()
+    {
+        if (Item != null)
+        {
+            Item.isInEditMode = true;
+            editingItem = Item.Copy();
+        }
+    }
+
+    private void TurnOffEdit(bool success)
+    {
+        if (success)
+        {
+            editingItem?.MapTo(Item);
+        }
+        if (Item is not null)
+            Item.isInEditMode = false;
+        editingItem = null;
+        EditDoneCallback.InvokeAsync(success);
+    }
 }

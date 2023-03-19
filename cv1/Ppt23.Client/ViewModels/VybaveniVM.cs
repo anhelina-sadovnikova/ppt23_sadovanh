@@ -1,19 +1,48 @@
-﻿namespace Ppt23.Client.ViewModels;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+
+namespace Ppt23.Client.ViewModels;
 
 public class VybaveniVm
 {
+    [Required(ErrorMessage = "Pole nesmí být prázdné")]
+    [MinLength(5, ErrorMessage = "Délka u pole \"{0}\" musí být alespoň {1} znaků")]
+    [Display(Name = "Název")]
     public string Name { get; set; }
+
+    [Required(ErrorMessage = "Pole nesmí být prázdné")]
+    [Range(0, 10000000, ErrorMessage = "Cena musí být v rozmezí 0 až 10 000 000")]
+    public int Price { get; set; }
     public DateTime dateBuy { get; set; }
     public DateTime lastRev { get; set; }
-    public bool IsRevNeeded { get => DateTime.Now.AddYears(-2) < lastRev; }
+    public bool IsRevNeeded { get => DateTime.Now.AddYears(-2) > lastRev; }
     public bool isInEditMode { get; set; } = false;
-
     public VybaveniVm()
     {
         DateTime od = new DateTime(2010, 01, 01);
         this.Name = RandomName(10);
+        Random rnd = new Random();
+        this.Price = rnd.Next(0, 10000000);
         this.dateBuy = GetRandomDate(od, DateTime.Now);
         this.lastRev = GetRandomDate(dateBuy, DateTime.Now);
+    }
+    public VybaveniVm Copy()
+    {
+        VybaveniVm to = new();
+        to.Name = Name;
+        to.Price = Price;
+        to.dateBuy = dateBuy;
+        to.lastRev = lastRev;
+        to.isInEditMode = isInEditMode;
+        return to;
+    }
+    public void MapTo(VybaveniVm? to)
+    {
+        if (to == null) return;
+        to.Name = Name;
+        to.Price = Price;
+        to.dateBuy = dateBuy;
+        to.lastRev = lastRev;
     }
     public static List<VybaveniVm> VratRandSeznam()
     {

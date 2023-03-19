@@ -8,19 +8,20 @@
 <body>
     <div>
         <div>
-            <div style="width: 1000px; column-count: 4">
+            <div style="width: 1000px; column-count: 5">
                 <div>Název</div>
+                <div>Cena</div>
                 <div>Datum nákupu</div>
                 <div>Datum poslední revize</div>
                 <div>Potřebuje revizi</div>
             </div>
             <div>
-                @foreach (var vyb in seznamVybaveni)
+                @foreach (var Item in seznamVybaveni)
                 {
-                    <div class="vybaveni-vm @((vyb.IsRevNeeded) ? "bg-red" : "")">
-                        <VybaveRow Vyb="vyb"
-                               SmazEventCallback="() => seznamVybaveni.Remove(vyb)"
-                               RevizeEventCallBack="() => vyb.lastRev = DateTime.Now">
+                    <div class="vybaveni-vm @((Item.IsRevNeeded) ? "bg-red" : "")">
+                        <VybaveRow Item="Item"
+                               SmazEventCallback="() => seznamVybaveni.Remove(Item)"
+                               RevizeEventCallBack="() => Item.lastRev = DateTime.Now">
                         </VybaveRow>
                     </div>
                 }
