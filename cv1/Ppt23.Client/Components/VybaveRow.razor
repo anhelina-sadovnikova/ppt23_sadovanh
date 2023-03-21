@@ -34,13 +34,21 @@ else if (editingItem != null && editingItem.isInEditMode)
        <DataAnnotationsValidator />
             <div>
                 <div>
+                    <div>
                     <InputText @bind-Value=@editingItem.Name />
+                </div>
+                <div>
                     <ValidationMessage For="() => editingItem.Name" />
+                </div>
                 </div>
 
                 <div>
+                    <div>
                     <InputNumber @bind-Value=@editingItem.Price />
+                </div>
+                <div>
                     <ValidationMessage For="() => editingItem.Price" />
+                        </div>
                 </div>
 
                 <div>
@@ -53,12 +61,12 @@ else if (editingItem != null && editingItem.isInEditMode)
 
                 <div>@((editingItem.IsRevNeeded) ? "Ano" : "Ne")</div>
                 <div>
-                    <button type="submit">
-                      ok
-                    </button>
-                    <button type="button" @onclick="() => TurnOffEdit(false)">
-                      x
-                    </button>
+                    <button style="border-radius: 5px">
+                    <i class="material-icons">done</i>
+                </button>
+                <button style="border-radius: 5px" @onclick="() => TurnOffEdit(false)">
+                      <i class="material-icons">close</i>
+                </button>
                 </div>
             </div>
         </EditForm>
