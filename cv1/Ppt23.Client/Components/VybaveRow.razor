@@ -35,20 +35,20 @@ else if (editingItem != null && editingItem.isInEditMode)
             <div>
                 <div>
                     <div>
-                    <InputText @bind-Value=@editingItem.Name />
-                </div>
-                <div>
-                    <ValidationMessage For="() => editingItem.Name" />
-                </div>
+                        <InputText @bind-Value=@editingItem.Name />
+                    </div>
+                    <div>
+                        <ValidationMessage For="() => editingItem.Name" />
+                    </div>
                 </div>
 
                 <div>
                     <div>
-                    <InputNumber @bind-Value=@editingItem.Price />
-                </div>
-                <div>
-                    <ValidationMessage For="() => editingItem.Price" />
-                        </div>
+                        <InputNumber @bind-Value=@editingItem.Price />
+                    </div>
+                    <div>
+                        <ValidationMessage For="() => editingItem.Price" />
+                    </div>
                 </div>
 
                 <div>
