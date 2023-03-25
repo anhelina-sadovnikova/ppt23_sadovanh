@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Ppt23.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,20 @@ app.MapPost("/vybaveni", (VybaveniVm prichoziModel) =>
     prichoziModel.Id = Guid.NewGuid();
     seznamVybaveni.Insert(0, prichoziModel);
     return prichoziModel.Id;
+});
+
+app.MapPut("/vybaveni/{id}", (Guid id, [FromBody] VybaveniVm updatedItem) =>
+{
+    var existingItem = seznamVybaveni.FirstOrDefault(x => x.Id == id);
+    if (existingItem == null)
+    {
+        return Results.NotFound($"Záznam s Id {id} nebyl nalezen.");
+    }
+
+    existingItem.Name = updatedItem.Name;
+    existingItem.Price = updatedItem.Price;
+
+    return Results.Ok();
 });
 
 
