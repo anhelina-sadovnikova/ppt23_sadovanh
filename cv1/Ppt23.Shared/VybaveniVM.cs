@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace Ppt23.Client.ViewModels;
+namespace Ppt23.Shared;
 
 public class VybaveniVm
 {
@@ -17,6 +17,7 @@ public class VybaveniVm
     public DateTime lastRev { get; set; }
     public bool IsRevNeeded { get => DateTime.Now.AddYears(-2) > lastRev; }
     public bool isInEditMode { get; set; } = false;
+    public Guid Id { get; set; }
     public VybaveniVm()
     {
         DateTime od = new DateTime(2010, 01, 01);

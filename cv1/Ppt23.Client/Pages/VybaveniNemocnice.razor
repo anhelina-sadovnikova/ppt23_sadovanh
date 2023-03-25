@@ -6,34 +6,41 @@
 </head>
 
 <body>
-    <div>
-        <div>
-            <div style="width: 1000px; column-count: 5">
-                <div>Název</div>
-                <div>Cena</div>
-                <div>Datum nákupu</div>
-                <div>Datum poslední revize</div>
-                <div>Potřebuje revizi</div>
+      <div style="width: 1000px; column-count: 5">
+        <div>Název</div>
+        <div>Cena</div>
+        <div>Datum nákupu</div>
+        <div>Datum poslední revize</div>
+        <div>Potřebuje revizi</div>
+      </div>
+      <div>
+        @foreach (var Item in seznamVybaveni)
+        {
+            <div class="vybaveni-vm @((Item.IsRevNeeded) ? "bg-red" : "")">
+                <VybaveRow Item="Item"
+                    SmazEventCallback="() => seznamVybaveni.Remove(Item)"
+                    RevizeEventCallBack="() => Item.lastRev = DateTime.Now">
+                </VybaveRow>
             </div>
-            <div>
-                @foreach (var Item in seznamVybaveni)
-                {
-                    <div class="vybaveni-vm @((Item.IsRevNeeded) ? "bg-red" : "")">
-                        <VybaveRow Item="Item"
-                               SmazEventCallback="() => seznamVybaveni.Remove(Item)"
-                               RevizeEventCallBack="() => Item.lastRev = DateTime.Now">
-                        </VybaveRow>
-                    </div>
-                }
-                <div class="pocetVyb">Pocet vybaveni: @seznamVybaveni.Count</div>
-                <button style="border-radius: 5px" @onclick="noveVybaveni">Generovat nové vybavení</button>
-            </div>
-        </div>
-    </div>
+        }
+        <div class="pocetVyb">Pocet vybaveni: @seznamVybaveni.Count</div>
+        <button style="border-radius: 5px" @onclick="noveVybaveni">Generovat nové vybavení</button>
+      </div>
+      @if (isInNewMode)
+    {
+        <VybaveRow Item ="newModel">
+            <button @onclick="() => {seznamVybaveni.Insert(0,newModel); newModel.isInEditMode = false; isInNewMode = false;}" class="twbtn bg-teal-500">Přidej</button>
+            <button @onclick="() => isInNewMode = false" class="twbtn bg-yellow-500">Zrušit</button>
+        </VybaveRow>
+    }
 </body>
 
 @code {
     List<VybaveniVm> seznamVybaveni = new List<VybaveniVm>();
+    bool isInNewMode;
+    VybaveniVm? newModel;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
 
     public VybaveniNemocnice()
     {
