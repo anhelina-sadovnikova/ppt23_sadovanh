@@ -43,9 +43,20 @@ app.MapPut("/vybaveni/{id}", (Guid id, [FromBody] VybaveniVm updatedItem) =>
 
     existingItem.Name = updatedItem.Name;
     existingItem.Price = updatedItem.Price;
+    existingItem.dateBuy = updatedItem.dateBuy;
+    existingItem.lastRev = updatedItem.lastRev;
 
     return Results.Ok();
 });
+
+app.MapGet("/vybaveni/{Id}", (Guid Id) =>
+{
+    var item = seznamVybaveni.SingleOrDefault(x => x.Id == Id);
+    return item;
+}
+);
+
+
 
 
 
