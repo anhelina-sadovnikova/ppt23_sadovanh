@@ -70,7 +70,7 @@ app.MapDelete("/vybaveni/{Id}", (Guid Id) =>
     var item = seznamVybaveni.SingleOrDefault(x => x.Id == Id);
     if (item == null)
         return Results.NotFound("Tato položka nebyla nalezena!!");
-    seznam.Remove(item);
+    seznamVybaveni.Remove(item);
     return Results.Ok();
 }
 );

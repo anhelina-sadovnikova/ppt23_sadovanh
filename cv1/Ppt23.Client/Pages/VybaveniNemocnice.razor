@@ -3,7 +3,9 @@
 @inject HttpClient Http
 
 @if (seznamVybaveni is null) {
-    <div>Seznam je null</div>
+    <div class="absolute right-1/2 bottom-1/2  transform translate-x-1/2 translate-y-1/2 ">
+        <div class=" border-t-transparent border-solid animate-spin  rounded-full border-teal-600 border-8 h-16 w-16"></div>
+    </div>
     return;
 }
 
@@ -24,26 +26,33 @@
         {
             <div class="vybaveni-vm @((Item.IsRevNeeded) ? "bg-red" : "")">
                 <VybaveRow Item="Item"
-                    SmazEventCallback="() => seznamVybaveni.Remove(Item)"
+                    SmazEventCallback="() => SmazVybaveni(Item)"
                     RevizeEventCallBack="() => Item.lastRev = DateTime.Now">
                 </VybaveRow>
             </div>
         }
         <div class="pocetVyb">Pocet vybaveni: @seznamVybaveni.Count</div>
-        <button style="border-radius: 5px" @onclick="noveVybaveni">Generovat nové vybavení</button>
+        <button style="border-radius: 5px" @onclick="noveVybaveni">
+            Generovat nové vybavení
+        </button>
+        <button style="border-radius: 5px" @onclick="()=> {newModel = new();IsInNewMode = true;}">
+            Nový kus
+        </button>
       </div>
-      @if (isInNewMode)
-    {
-        <VybaveRow Item ="newModel">
-            <button @onclick="() => {seznamVybaveni.Insert(0,newModel); newModel.isInEditMode = false; isInNewMode = false;}" class="twbtn bg-teal-500">Přidej</button>
-            <button @onclick="() => isInNewMode = false" class="twbtn bg-yellow-500">Zrušit</button>
+      @if (IsInNewMode)
+        {
+        ArgumentNullException.ThrowIfNull(newModel);//zařídí tlačítko Nový kus
+
+        <VybaveRow IsInEditMode=true Vyb="newModel" EditDoneEventCallback="() => {seznamVybaveni.Insert(0,newModel); IsInNewMode = false;}">
+            <button type="submit">Přidej</button>
+            <button type="button" @onclick="() => IsInNewMode = false">Zrušit</button>
         </VybaveRow>
-    }
+        }
 </body>
 
 @code {
     List<VybaveniVm> seznamVybaveni = new List<VybaveniVm>();
-    bool isInNewMode;
+    bool IsInNewMode;
     VybaveniVm? newModel;
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -60,11 +69,29 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await Task.Delay(1000);
         seznamVybaveni = await Http.GetFromJsonAsync<List<VybaveniVm>>("vybaveni");
     }
 
     async Task SmazVybaveni(VybaveniVm Item)
     {
-        var odpoved = await
+        var odpoved = await Http.DeleteAsync($"vybaveni/{Item.Id}");
+        if (odpoved.IsSuccessStatusCode)
+            seznamVybaveni?.Remove(Item);
     }
+
+    async Task EditVybaveni(VybaveniVm Item)
+    {
+        var odpoved = await Http.PutAsJsonAsync($"vybaveni/{Item.Id}", Item);
+        if (odpoved.IsSuccessStatusCode)
+        {
+            System.Diagnostics.Debug.WriteLine("succes");
+        }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine("This is a log");
+        }
+    }
+
+
 }

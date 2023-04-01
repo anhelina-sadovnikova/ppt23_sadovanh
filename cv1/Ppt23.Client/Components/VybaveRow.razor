@@ -4,7 +4,11 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 @if (Item == null) return;
-@if (Item != null && !Item.isInEditMode)
+@{
+    if (Item == null && IsInEditMode)
+        ZapniEditMode();
+}
+@if (!IsInEditMode)
 {
     <div>@Item.Name</div>
     <div>@Item.Price</div>
@@ -23,33 +27,25 @@
             <i class="material-icons">delete</i>
         </button>
 
-        <button style="border-radius: 5px" @onclick="() => TurnOnEdit()">
+        <button style="border-radius: 5px" @onclick="() => ZapniEditMode()">
             <i class="material-icons">edit</i>
         </button>
     </div>
 }
-else if (editingItem != null && editingItem.isInEditMode)
+else if (Item != null) //je v editacnim modu
 {
-   <EditForm Model=editingItem OnValidSubmit="() => TurnOffEdit(true)">
+    <EditForm Model=editingItem OnValidSubmit="() => OnValidSubmit()">
        <DataAnnotationsValidator />
             <div>
                 <div>
-                    <div>
-                        <InputText @bind-Value=@editingItem.Name />
-                    </div>
-                    <div>
-                        <ValidationMessage For="() => editingItem.Name" />
-                    </div>
+                    <InputText @bind-Value=@editingItem.Name />
+                    <ValidationMessage For="() => editingItem.Name" /> 
                 </div>
 
                 <div>
-                    <div>
-                        <InputNumber @bind-Value=@editingItem.Price />
-                    </div>
-                    <div>
-                        <ValidationMessage For="() => editingItem.Price" />
-                    </div>
-                </div>
+                    <InputNumber @bind-Value=@editingItem.Price />
+                    <ValidationMessage For="() => editingItem.Price" /> 
+                <div/>
 
                 <div>
                     <InputDate @bind-Value=@editingItem.dateBuy />
@@ -64,49 +60,65 @@ else if (editingItem != null && editingItem.isInEditMode)
                     <button style="border-radius: 5px">
                     <i class="material-icons">done</i>
                 </button>
-                <button style="border-radius: 5px" @onclick="() => TurnOffEdit(false)">
-                      <i class="material-icons">close</i>
+                    <button style="border-radius: 5px" @onclick="() => IsInEditMode = false">
+                    <i class="material-icons">close</i>
                 </button>
+                </div>
+                @if (ChildContent == null)
+                {
+                    <button type="submit" class="bg-amber-500 twbtn">
+                        Ok
+                    </button>
+                    <button @onclick="() => IsInEditMode = false" class="bg-gray-500 twbtn">
+                        zruš
+                    </button>
+                }
+                else
+                {
+                    @ChildContent
+                }
                 </div>
             </div>
         </EditForm>
 }
+else
+{
+    <div>Smthing's wrong! ❌</div>
+}
 @code {
+    [Parameter, EditorRequired]
+    public VybaveniVm Vyb { get; set; } = null!;
     [Parameter] public EventCallback SmazEventCallback { get; set; }
     [Parameter] public EventCallback RevizeEventCallBack { get; set; }
     [Parameter] public EventCallback EditDoneCallback { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool IsInEditMode { get; set; }
     VybaveniVm? editingItem;
-    VybaveniVm? _Item;
-    [Parameter]
-    public VybaveniVm? Item
+    VybaveniVm? Item;
+
+    private void OnValidSubmit()
     {
-        get => _Item;
-        set
-        {
-            _Item = value;
-            if (value != null && value.isInEditMode)
-                TurnOnEdit();
-        }
+        ArgumentNullException.ThrowIfNull(Item);
+        IsInEditMode = false;
+        Vyb.Name = Vyb.Name;
+        Vyb.Price = Vyb.Price;
+        Vyb.dateBuy = Vyb.dateBuy;
+        Vyb.lastRev = Vyb.lastRev;
+        //EditDoneEventCallback.InvokeAsync();
     }
 
-    private void TurnOnEdit()
+    void ZapniEditMode()
     {
-        if (Item != null)
-        {
-            Item.isInEditMode = true;
-            editingItem = Item.Copy();
-        }
+        IsInEditMode = true;
+        Item = new()
+            {
+                Name = Vyb.Name,
+                Price = Vyb.Price,
+                dateBuy = Vyb.dateBuy,
+                lastRev = Vyb.lastRev
+            };
     }
 
-    private void TurnOffEdit(bool success)
-    {
-        if (success)
-        {
-            editingItem?.MapTo(Item);
-        }
-        if (Item is not null)
-            Item.isInEditMode = false;
-        editingItem = null;
-        EditDoneCallback.InvokeAsync(success);
-    }
+    
+
 }

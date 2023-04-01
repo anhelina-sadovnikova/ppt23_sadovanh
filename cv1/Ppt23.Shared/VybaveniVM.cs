@@ -16,7 +16,6 @@ public class VybaveniVm
     public DateTime dateBuy { get; set; }
     public DateTime lastRev { get; set; }
     public bool IsRevNeeded { get => DateTime.Now.AddYears(-2) > lastRev; }
-    public bool isInEditMode { get; set; } = false;
     public Guid Id { get; set; }
     public VybaveniVm()
     {
@@ -34,7 +33,6 @@ public class VybaveniVm
         to.Price = Price;
         to.dateBuy = dateBuy;
         to.lastRev = lastRev;
-        to.isInEditMode = isInEditMode;
         return to;
     }
     public void MapTo(VybaveniVm? to)
