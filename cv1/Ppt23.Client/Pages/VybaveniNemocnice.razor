@@ -1,5 +1,11 @@
 ﻿@page "/vybaveni"
 @using Ppt23.Client.Components;
+@inject HttpClient Http
+
+@if (seznamVybaveni is null) {
+    <div>Seznam je null</div>
+    return;
+}
 
 <head>
     <meta charset="utf-8" />
@@ -44,11 +50,21 @@
 
     public VybaveniNemocnice()
     {
-        seznamVybaveni = VybaveniVm.VratRandSeznam();
+        //seznamVybaveni = VybaveniVm.VratRandSeznam();
     }
 
     public void noveVybaveni()
     {
         VybaveniVm.PridatJednoVybaveni(seznamVybaveni);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        seznamVybaveni = await Http.GetFromJsonAsync<List<VybaveniVm>>("vybaveni");
+    }
+
+    async Task SmazVybaveni(VybaveniVm Item)
+    {
+        var odpoved = await
     }
 }
