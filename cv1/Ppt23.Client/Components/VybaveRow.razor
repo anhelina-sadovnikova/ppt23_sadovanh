@@ -3,19 +3,19 @@
 </head>
 @using Microsoft.AspNetCore.Components.Forms
 
-@if (Item == null) return;
+@if (Vyb == null) return;
 @{
-    if (Item == null && IsInEditMode)
+    if (editingItem == null && IsInEditMode)
         ZapniEditMode();
 }
 @if (!IsInEditMode)
 {
-    <div>@Item.Name</div>
-    <div>@Item.Price</div>
-    <div>@Item.dateBuy.ToString("yyyy-MM-dd")</div>
-    <div>@Item.lastRev.ToString("yyyy-MM-dd")</div>
+    <div>@Vyb.Name</div>
+    <div>@Vyb.Price</div>
+    <div>@Vyb.dateBuy.ToString("yyyy-MM-dd")</div>
+    <div>@Vyb.lastRev.ToString("yyyy-MM-dd")</div>
     <div>@(
-            (Item.IsRevNeeded) ? "Ano" : "Ne"
+            (Vyb.IsRevNeeded) ? "Ano" : "Ne"
     )</div>
 
     <div>
@@ -32,7 +32,7 @@
         </button>
     </div>
 }
-else if (Item != null) //je v editacnim modu
+else if (editingItem != null) //je v editacnim modu
 {
     <EditForm Model=editingItem OnValidSubmit="() => OnValidSubmit()">
        <DataAnnotationsValidator />
@@ -92,25 +92,26 @@ else
     [Parameter] public EventCallback RevizeEventCallBack { get; set; }
     [Parameter] public EventCallback EditDoneCallback { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback EditDoneEventCallback { get; set; }
     [Parameter] public bool IsInEditMode { get; set; }
     VybaveniVm? editingItem;
-    VybaveniVm? Item;
+    //VybaveniVm? Item;
 
     private void OnValidSubmit()
     {
-        ArgumentNullException.ThrowIfNull(Item);
+        ArgumentNullException.ThrowIfNull(editingItem);
         IsInEditMode = false;
-        Vyb.Name = Vyb.Name;
-        Vyb.Price = Vyb.Price;
-        Vyb.dateBuy = Vyb.dateBuy;
-        Vyb.lastRev = Vyb.lastRev;
-        //EditDoneEventCallback.InvokeAsync();
+        Vyb.Name = editingItem.Name;
+        Vyb.Price = editingItem.Price;
+        Vyb.dateBuy = editingItem.dateBuy;
+        Vyb.lastRev = editingItem.lastRev;
+        EditDoneEventCallback.InvokeAsync();
     }
 
     void ZapniEditMode()
     {
         IsInEditMode = true;
-        Item = new()
+        editingItem = new()
             {
                 Name = Vyb.Name,
                 Price = Vyb.Price,

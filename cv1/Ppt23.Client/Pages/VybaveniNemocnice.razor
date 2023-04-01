@@ -22,12 +22,12 @@
         <div>Potřebuje revizi</div>
       </div>
       <div>
-        @foreach (var Item in seznamVybaveni)
+        @foreach (VybaveniVm vyb in seznamVybaveni)
         {
-            <div class="vybaveni-vm @((Item.IsRevNeeded) ? "bg-red" : "")">
-                <VybaveRow Item="Item"
-                    SmazEventCallback="() => SmazVybaveni(Item)"
-                    RevizeEventCallBack="() => Item.lastRev = DateTime.Now">
+            <div class="vybaveni-vm @((vyb.IsRevNeeded) ? "bg-red" : "")">
+                <VybaveRow Vyb="vyb"
+                       SmazEventCallback="() => SmazVybaveni(vyb)"
+                    RevizeEventCallBack="() => vyb.lastRev = DateTime.Now">
                 </VybaveRow>
             </div>
         }
@@ -73,16 +73,16 @@
         seznamVybaveni = await Http.GetFromJsonAsync<List<VybaveniVm>>("vybaveni");
     }
 
-    async Task SmazVybaveni(VybaveniVm Item)
+    async Task SmazVybaveni(VybaveniVm vyb)
     {
-        var odpoved = await Http.DeleteAsync($"vybaveni/{Item.Id}");
+        var odpoved = await Http.DeleteAsync($"vybaveni/{vyb.Id}");
         if (odpoved.IsSuccessStatusCode)
-            seznamVybaveni?.Remove(Item);
+            seznamVybaveni?.Remove(vyb);
     }
 
-    async Task EditVybaveni(VybaveniVm Item)
+    async Task EditVybaveni(VybaveniVm vyb)
     {
-        var odpoved = await Http.PutAsJsonAsync($"vybaveni/{Item.Id}", Item);
+        var odpoved = await Http.PutAsJsonAsync($"vybaveni/{vyb.Id}", vyb);
         if (odpoved.IsSuccessStatusCode)
         {
             System.Diagnostics.Debug.WriteLine("succes");
