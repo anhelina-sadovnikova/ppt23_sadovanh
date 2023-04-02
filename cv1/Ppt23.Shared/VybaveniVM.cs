@@ -50,6 +50,7 @@ public class VybaveniVm
         for (int i = 0; i < 5; i++)
         {
             VybaveniVm vm = new VybaveniVm();
+            vm.Id = Guid.NewGuid();
             list.Add(vm);
         }
         return list;

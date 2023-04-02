@@ -26,8 +26,9 @@
         {
             <div class="vybaveni-vm @((vyb.IsRevNeeded) ? "bg-red" : "")">
                 <VybaveRow Vyb="vyb"
-                       SmazEventCallback="() => SmazVybaveni(vyb)"
-                    RevizeEventCallBack="() => vyb.lastRev = DateTime.Now">
+                    SmazEventCallback="() => SmazVybaveni(vyb)"
+                    RevizeEventCallBack="() => vyb.lastRev = DateTime.Now"
+                    EditDoneEventCallback="() => EditVybaveni(vyb)">
                 </VybaveRow>
             </div>
         }
@@ -43,7 +44,7 @@
         {
         ArgumentNullException.ThrowIfNull(newModel);//zařídí tlačítko Nový kus
 
-        <VybaveRow IsInEditMode=true Vyb="newModel" EditDoneEventCallback="() => {seznamVybaveni.Insert(0,newModel); IsInNewMode = false;}">
+        <VybaveRow IsInEditMode=true Vyb="newModel" EditDoneEventCallback="() => CreateVybaveni(newModel)">
             <button type="submit">Přidej</button>
             <button type="button" @onclick="() => IsInNewMode = false">Zrušit</button>
         </VybaveRow>
@@ -56,40 +57,55 @@
     VybaveniVm? newModel;
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-
-    public VybaveniNemocnice()
-    {
-        //seznamVybaveni = VybaveniVm.VratRandSeznam();
-    }
-
     public void noveVybaveni()
     {
         VybaveniVm.PridatJednoVybaveni(seznamVybaveni);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() //GET
     {
         await Task.Delay(1000);
         seznamVybaveni = await Http.GetFromJsonAsync<List<VybaveniVm>>("vybaveni");
     }
 
-    async Task SmazVybaveni(VybaveniVm vyb)
+    async Task SmazVybaveni(VybaveniVm vyb) //DELETE
     {
         var odpoved = await Http.DeleteAsync($"vybaveni/{vyb.Id}");
         if (odpoved.IsSuccessStatusCode)
             seznamVybaveni?.Remove(vyb);
     }
 
-    async Task EditVybaveni(VybaveniVm vyb)
+    async Task EditVybaveni(VybaveniVm vyb) //PUT
     {
         var odpoved = await Http.PutAsJsonAsync($"vybaveni/{vyb.Id}", vyb);
         if (odpoved.IsSuccessStatusCode)
         {
-            System.Diagnostics.Debug.WriteLine("succes");
+            Console.WriteLine("edit success");
         }
         else
         {
-            System.Diagnostics.Debug.WriteLine("This is a log");
+            Console.WriteLine("edit not success");
+        }
+    }
+
+    private async Task CreateVybaveni(VybaveniVm vyb)
+    {
+        HttpResponseMessage response = await Http.PostAsJsonAsync($"vybaveni", vyb);
+
+        if (response.IsSuccessStatusCode)
+        {
+            VybaveniVm CreateVybaveni = await response.Content.ReadFromJsonAsync<VybaveniVm>();
+            if (CreateVybaveni != null)
+            {
+                newModel.Id = CreateVybaveni.Id;
+                seznamVybaveni.Insert(0, newModel);
+                IsInNewMode = false;
+                Console.WriteLine("create success");
+            }
+        }
+        else
+        {
+            Console.WriteLine("create not success");
         }
     }
 

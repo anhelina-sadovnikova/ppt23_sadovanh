@@ -1,0 +1,19 @@
+﻿@page "/vybaveni/{Id:guid}"
+@inject HttpClient Http
+@using Ppt23.Shared
+
+<h4 style="margin: 10px">Detail vybaveni @Id</h4>
+<h4 style="margin: 10px"> Name:</h4>
+<h5 style="margin: 10px">@vybaveni?.Name</h5>
+<h4 style="margin: 10px"> Price:</h4>
+<h5 style="margin: 10px">@vybaveni?.Price</h5>
+<a style="margin: 10px" href="vybaveni"> Vratit se do seznamu vybaveni </a>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    VybaveniVm? vybaveni;
+    protected override async Task OnInitializedAsync()
+    {
+        vybaveni = await Http.GetFromJsonAsync<VybaveniVm>($"vybaveni/{Id}");
+    }
+}
