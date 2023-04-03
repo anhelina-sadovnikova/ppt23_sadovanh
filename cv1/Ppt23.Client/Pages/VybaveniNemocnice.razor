@@ -27,7 +27,7 @@
             <div class="vybaveni-vm @((vyb.IsRevNeeded) ? "bg-red" : "")">
                 <VybaveRow Vyb="vyb"
                     SmazEventCallback="() => SmazVybaveni(vyb)"
-                    RevizeEventCallBack="() => vyb.lastRev = DateTime.Now"
+                       RevizeEventCallBack="() => UdelejRevizi(vyb)"
                     EditDoneEventCallback="() => EditVybaveni(vyb)">
                 </VybaveRow>
             </div>
@@ -88,26 +88,29 @@
         }
     }
 
-    private async Task CreateVybaveni(VybaveniVm vyb)
+    async Task UdelejRevizi(VybaveniVm vyb) //PUT
+    {
+        vyb.lastRev = DateTime.Now;
+        var odpoved = await Http.PutAsJsonAsync($"vybaveni/{vyb.Id}", vyb);
+        if (odpoved.IsSuccessStatusCode)
+        {
+            Console.WriteLine("edit success");
+        }
+        else
+        {
+            Console.WriteLine("edit not success");
+        }
+    }
+
+    private async Task CreateVybaveni(VybaveniVm vyb) //POST
     {
         HttpResponseMessage response = await Http.PostAsJsonAsync($"vybaveni", vyb);
 
         if (response.IsSuccessStatusCode)
         {
-            VybaveniVm CreateVybaveni = await response.Content.ReadFromJsonAsync<VybaveniVm>();
-            if (CreateVybaveni != null)
-            {
-                newModel.Id = CreateVybaveni.Id;
-                seznamVybaveni.Insert(0, newModel);
-                IsInNewMode = false;
-                Console.WriteLine("create success");
-            }
-        }
-        else
-        {
-            Console.WriteLine("create not success");
+            seznamVybaveni.Insert(0, newModel);
+            IsInNewMode = false;
+            Console.WriteLine("create success");
         }
     }
-
-
 }
