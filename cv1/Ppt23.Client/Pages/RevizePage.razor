@@ -1,0 +1,15 @@
+﻿@page "/revize/{routeParam}"
+@using Ppt23.Client.Components;
+@inject HttpClient Http
+
+<h1 style="color: green">@routeParam</h1>
+
+<input />
+<button>Vyhledat</button>
+
+<ul>
+    @foreach (RevizeViewModel vyb in RandSeznamRevize)
+    {
+        <li>@RevizeViewModel.Name</li>
+    }
+</ul>
