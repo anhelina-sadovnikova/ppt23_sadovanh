@@ -1,13 +1,15 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - sadovanh-ppt23
+name: Build and deploy ASP.Net Core app to Azure Web App - ppt23-tesy
 
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
+env: #proměnné, které můžeme používat dále pomocí env.PUBLISH_DIR
+  PUBLISH_DIR: vystup #výstupní složka kam se vybuildí aplikace (tuhle složku to vytvoří, na názvu nezáleží)
 
 jobs:
   build:
@@ -22,17 +24,23 @@ jobs:
           dotnet-version: '7.x'
           include-prerelease: true
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Determine latest folder # 01,02, atd - najde poslední cvičení
+        id: latest_folder
+        run: |
+          # Get a list of folders in the current directory sorted by name in reverse order
+          folders=$(ls -d */ | sort -r)
+          # Set the latest folder as an environment variable
+          latest_folder=${folders%%/*}
+          echo "LATEST_FOLDER=$latest_folder" >> $GITHUB_ENV
+      - name: Publish with dotnet #do určené složky publikuje aplikace, v release configuraci
+        run: dotnet publish  ${{ env.LATEST_FOLDER }}/Ppt23.Api/Ppt23.Api.csproj --configuration Release --output ${{env.PUBLISH_DIR}}
+        # ☝️ Upravte dle názvu vašeho .sln
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{env.PUBLISH_DIR}}
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,7 +59,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'sadovanh-ppt23'
+          app-name: 'ppt23-tesy'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_54B2C8CA374E4AE1AE1334F8B1B87DBC }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_149216E4ABF7441EBDB923AB95194FB0 }}
           package: .
