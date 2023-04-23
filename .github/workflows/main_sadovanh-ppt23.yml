@@ -59,7 +59,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'ppt23-tesy'
+          app-name: 'sadovanh-ppt23'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_149216E4ABF7441EBDB923AB95194FB0 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_54B2C8CA374E4AE1AE1334F8B1B87DBC }}
           package: .
