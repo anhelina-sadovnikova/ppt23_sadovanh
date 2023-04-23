@@ -1,0 +1,37 @@
+﻿@page "/revize/{routeParam}"
+@using Ppt23.Client.Components;
+@inject HttpClient Http
+
+<h1 style="color: green">@routeParam</h1>
+
+<input @bind-value="@input" />
+<button @onclick="()=> VyhledejRevize()" >Vyhledej</button>
+
+@if (seznamRevizi is not null)
+{
+    <div>
+
+        @foreach (var rev in seznamRevizi)
+        {
+            <div>
+                Id: @rev.Id
+            </div>
+            <div>
+                Nazev: @rev.Name
+            </div>
+        }
+    </div>
+}
+@code {
+
+    [Parameter] public string routeParam { get; set; } = "";
+    string input = "";
+    List<RevizeVM>? seznamRevizi;
+
+
+    async Task VyhledejRevize()
+    {
+        seznamRevizi = await Http.GetFromJsonAsync<List<RevizeVM>>($"revize/{input}");
+
+    }
+}
