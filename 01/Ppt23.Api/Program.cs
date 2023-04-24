@@ -1,19 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ppt23.Shared;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddCors(corsOptions => corsOptions.AddDefaultPolicy(policy =>
-    policy.WithOrigins("https://localhost:1111")//👈
-    .WithMethods("GET", "DELETE", "PUT", "POST")//👈 (musí být UPPERCASE)
-    .AllowAnyHeader()
-));
-
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var corsAllowedOrigin = builder.Configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
+ArgumentNullException.ThrowIfNull(corsAllowedOrigin);
+
+builder.Services.AddCors(corsOptions => corsOptions.AddDefaultPolicy(policy =>
+    policy.WithOrigins(corsAllowedOrigin)//👈
+    .WithMethods("GET", "DELETE", "POST", "PUT")//👈 (musí být UPPERCASE)
+    .AllowAnyHeader()
+));
 
 var app = builder.Build();
 
