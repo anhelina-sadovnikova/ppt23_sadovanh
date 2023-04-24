@@ -10,5 +10,4 @@ var httpClientBaseAddress = builder.Configuration["HttpClientBaseAddress"];
 ArgumentNullException.ThrowIfNull(httpClientBaseAddress);
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(httpClientBaseAddress) });
 
-
 await builder.Build().RunAsync();
