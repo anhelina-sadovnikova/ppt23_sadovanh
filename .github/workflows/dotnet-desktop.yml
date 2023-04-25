@@ -38,6 +38,9 @@ jobs:
     - name: Add .nojekyll file
       run: touch ${{env.PUBLISH_DIR}}/wwwroot/.nojekyll      
       
+    - name: copy index.html to 404.html
+      run: cp ${{env.PUBLISH_DIR}}/wwwroot/index.html ${{env.PUBLISH_DIR}}/wwwroot/404.html  
+      
     # tato akce zařídí přenesení obsahu wwwroot složky to samostatné větve s názvem gh-pages
     # posléze je nutné nastavit v Settings -> Project větev gh-pages jako zdroj pro stránky
     - name: Commit wwwroot to GitHub Pages 
