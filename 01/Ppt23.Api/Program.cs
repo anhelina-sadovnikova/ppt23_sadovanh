@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen();
 var corsAllowedOrigin = builder.Configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
 ArgumentNullException.ThrowIfNull(corsAllowedOrigin);
 
+Console.WriteLine($"CORS ALLOWED: {corsAllowedOrigin}");
+
 builder.Services.AddCors(corsOptions => corsOptions.AddDefaultPolicy(policy =>
     policy.WithOrigins(corsAllowedOrigin)//👈
     .WithMethods("GET", "DELETE", "POST", "PUT")//👈 (musí být UPPERCASE)
