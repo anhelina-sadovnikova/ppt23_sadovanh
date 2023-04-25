@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Ppt23.Shared;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Ppt23.Api.Data;
+using Mapster;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ builder.Services.AddCors(corsOptions => corsOptions.AddDefaultPolicy(policy =>
     .AllowAnyHeader()
 ));
 
+builder.Services.AddDbContext<PptDbContext>(opt => opt.UseSqlite("FileName=mojeDatabaze.db"));
+
 var app = builder.Build();
 
 app.UseCors();
@@ -36,23 +41,48 @@ app.UseHttpsRedirection();
 List<VybaveniVm> seznamVybaveni = VybaveniVm.VratRandSeznam();
 List<RevizeVM> seznamRevizi = RevizeVM.VratRandSeznam(100);
 
+app.MapPost("/vybaveni", (VybaveniVm prichoziModel, PptDbContext _db) =>
+{
+    prichoziModel.Id = Guid.Empty;
+    var en = prichoziModel.Adapt<Vybaveni>();
+    /*
+    Vybaveni en = new()
+    {
+        Name = prichoziModel.Name,
+        Price = prichoziModel.Price,
+        dateBuy = prichoziModel.dateBuy,
+        lastRev = prichoziModel.lastRev
+    };*/
+
+    _db.Vybavenis.Add(en);
+    _db.SaveChanges();
+
+    return en.Id;
+});
+
+
 app.MapGet("/revize/{text}", (string text) =>
 {
     var filtrovaneRevize = seznamRevizi.Where(x => x.Name.Contains(text)).ToList();
     return Results.Ok(filtrovaneRevize);
 });
 
+app.MapGet("/vybaveni", (PptDbContext db) =>
+{
+    List<VybaveniVm> destinations = db.Vybavenis.ProjectToType<VybaveniVm>().ToList();
+});
+/*
 app.MapGet("/vybaveni", () =>
     {
         return seznamVybaveni;
-    });
+    });*/
 
-app.MapPost("/vybaveni", (VybaveniVm prichoziModel) =>
+/*app.MapPost("/vybaveni", (VybaveniVm prichoziModel) =>
 {
     prichoziModel.Id = Guid.NewGuid();
     seznamVybaveni.Insert(0, prichoziModel);
     return prichoziModel.Id;
-});
+});*/
 
 app.MapPut("/vybaveni/{id}", (Guid id, [FromBody] VybaveniVm updatedItem) =>
 {
