@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - ppt23-tesy
+name: Build and deploy ASP.Net Core app to Azure Web App
 
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 env: #proměnné, které můžeme používat dále pomocí env.PUBLISH_DIR
   PUBLISH_DIR: vystup #výstupní složka kam se vybuildí aplikace (tuhle složku to vytvoří, na názvu nezáleží)
@@ -27,11 +27,6 @@ jobs:
       - name: Determine latest folder # 01,02, atd - najde poslední cvičení
         id: latest_folder
         run: |
-          # Get a list of folders in the current directory sorted by name in reverse order
-          folders=$(ls -d */ | sort -r)
-          # Set the latest folder as an environment variable
-          latest_folder=${folders%%/*}
-          echo "LATEST_FOLDER=$latest_folder" >> $GITHUB_ENV
       - name: Publish with dotnet #do určené složky publikuje aplikace, v release configuraci
         run: dotnet publish  01/Ppt23.Api/Ppt23.Api.csproj --configuration Release --output ${{env.PUBLISH_DIR}}
         # ☝️ Upravte dle názvu vašeho .sln
