@@ -14,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var corsAllowedOrigin = builder.Configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
+string? sqlDatabase = builder.Configuration.GetValue<String>("sqlDatabase");
 ArgumentNullException.ThrowIfNull(corsAllowedOrigin);
 
 Console.WriteLine($"CORS ALLOWED: {corsAllowedOrigin}");
@@ -24,11 +25,15 @@ builder.Services.AddCors(corsOptions => corsOptions.AddDefaultPolicy(policy =>
     .AllowAnyHeader()
 ));
 
-builder.Services.AddDbContext<PptDbContext>(opt => opt.UseSqlite("FileName=mojeDatabaze.db"));
+builder.Services.AddDbContext<PptDbContext>(opt => opt.UseSqlite($"Data Source={sqlDatabase}"));
 
 var app = builder.Build();
 
 app.UseCors();
+
+app.Services.CreateScope().ServiceProvider
+  .GetRequiredService<PptDbContext>()
+  .Database.Migrate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
