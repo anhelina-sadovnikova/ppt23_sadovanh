@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Ppt23.Api.Data;
 using Mapster;
+using MapsterMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,18 +42,11 @@ app.UseHttpsRedirection();
 List<VybaveniVm> seznamVybaveni = VybaveniVm.VratRandSeznam();
 List<RevizeVM> seznamRevizi = RevizeVM.VratRandSeznam(100);
 
+// DONE
 app.MapPost("/vybaveni", (VybaveniVm prichoziModel, PptDbContext _db) =>
 {
     prichoziModel.Id = Guid.Empty;
-    var en = prichoziModel.Adapt<Vybaveni>();
-    /*
-    Vybaveni en = new()
-    {
-        Name = prichoziModel.Name,
-        Price = prichoziModel.Price,
-        dateBuy = prichoziModel.dateBuy,
-        lastRev = prichoziModel.lastRev
-    };*/
+    Vybaveni en = prichoziModel.Adapt<Vybaveni>();
 
     _db.Vybavenis.Add(en);
     _db.SaveChanges();
@@ -60,59 +54,53 @@ app.MapPost("/vybaveni", (VybaveniVm prichoziModel, PptDbContext _db) =>
     return en.Id;
 });
 
-
-app.MapGet("/revize/{text}", (string text) =>
+//DONE??
+app.MapGet("/revize/{text}", (string text, PptDbContext db) =>
 {
-    var filtrovaneRevize = seznamRevizi.Where(x => x.Name.Contains(text)).ToList();
-    return Results.Ok(filtrovaneRevize);
+    Console.WriteLine(text);
+    var filtrovaneRevize = db.Revisions.Where(x => x.Name.Contains(text)).ToList();
+    Console.WriteLine(filtrovaneRevize);
+    return filtrovaneRevize;
 });
-
+// DONE
 app.MapGet("/vybaveni", (PptDbContext db) =>
 {
-    List<VybaveniVm> destinations = db.Vybavenis.ProjectToType<VybaveniVm>().ToList();
+    List<VybaveniVm> vybavenis = db.Vybavenis.ProjectToType<VybaveniVm>().ToList();
+    return Results.Ok(vybavenis);
 });
-/*
-app.MapGet("/vybaveni", () =>
-    {
-        return seznamVybaveni;
-    });*/
 
-/*app.MapPost("/vybaveni", (VybaveniVm prichoziModel) =>
+// DONE
+app.MapPut("/vybaveni/{id}", (Guid id, [FromBody] VybaveniVm updatedItem, PptDbContext db) =>
 {
-    prichoziModel.Id = Guid.NewGuid();
-    seznamVybaveni.Insert(0, prichoziModel);
-    return prichoziModel.Id;
-});*/
-
-app.MapPut("/vybaveni/{id}", (Guid id, [FromBody] VybaveniVm updatedItem) =>
-{
-    var existingItem = seznamVybaveni.FirstOrDefault(x => x.Id == id);
+    updatedItem.Id = id;
+    var existingItem = db.Vybavenis.FirstOrDefault(x => x.Id == id);
     if (existingItem == null)
     {
         return Results.NotFound($"Záznam s Id {id} nebyl nalezen.");
     }
 
-    existingItem.Name = updatedItem.Name;
-    existingItem.Price = updatedItem.Price;
-    existingItem.dateBuy = updatedItem.dateBuy;
-    existingItem.lastRev = updatedItem.lastRev;
+    updatedItem.Adapt(existingItem);
+    db.SaveChanges();
 
     return Results.Ok();
 });
-
-app.MapGet("/vybaveni/{Id}", (Guid Id) =>
+// DONE
+app.MapGet("/vybaveni/{Id}", (Guid Id, PptDbContext db) =>
 {
-    var item = seznamVybaveni.SingleOrDefault(x => x.Id == Id);
+    var item = db.Vybavenis.SingleOrDefault(x => x.Id == Id);
     return item;
 }
 );
 
-app.MapDelete("/vybaveni/{Id}", (Guid Id) =>
+//DONE
+app.MapDelete("/vybaveni/{Id}", (Guid Id, PptDbContext db) =>
 {
-    var item = seznamVybaveni.SingleOrDefault(x => x.Id == Id);
+    var item = db.Vybavenis.SingleOrDefault(x => x.Id == Id);
     if (item == null)
         return Results.NotFound("Tato položka nebyla nalezena!!");
-    seznamVybaveni.Remove(item);
+    db.Vybavenis.Remove(item);
+    db.SaveChanges();
+
     return Results.Ok();
 }
 );
