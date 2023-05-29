@@ -60,6 +60,24 @@ app.MapPost("/vybaveni", (VybaveniVm prichoziModel, PptDbContext _db) =>
     return en.Id;
 });
 
+app.MapPost("/revize/{Id}", (Guid Id, PptDbContext db) =>
+{
+    Vybaveni? vybaveni = db.Vybavenis.Include(v => v.Revizes).SingleOrDefault(v => v.Id == Id);
+
+    Revize revize = new()
+    {
+        Id = Guid.Empty,
+        Name = $"#{vybaveni.Revizes.Count + 1} Revize - {vybaveni.Name}",
+        VybaveniId = vybaveni.Id,
+        DateTime = DateTime.Now
+    };
+
+    db.Vybavenis.SingleOrDefault(v => v.Id == revize.VybaveniId)?.Revizes.Add(revize);
+    db.SaveChanges();
+
+    return Results.Ok();
+});
+
 //DONE??
 app.MapGet("/revize/{text}", (string text, PptDbContext db) =>
 {
@@ -71,9 +89,29 @@ app.MapGet("/revize/{text}", (string text, PptDbContext db) =>
 // DONE
 app.MapGet("/vybaveni", (PptDbContext db) =>
 {
-    List<VybaveniVm> vybavenis = db.Vybavenis.ProjectToType<VybaveniVm>().ToList();
+    //List<VybaveniVm> vybavenis = db.Vybavenis.ProjectToType<VybaveniVm>().ToList();
 
-    return Results.Ok(vybavenis);
+    //return Results.Ok(vybavenis);
+    List<VybaveniVm> vybaveniListVM = new();
+    List<Vybaveni> vybaveniList = db.Vybavenis.ToList();
+    List<Revize> revizeList = db.Revisions.ToList();
+
+    foreach (var item in vybaveniList)
+    {
+        VybaveniVm vybaveniVM = item.Adapt<VybaveniVm>();
+
+        var vybaveniRevizeList = revizeList.Where(r => r.VybaveniId == vybaveniVM.Id).ToList().OrderByDescending(r => r.DateTime);
+
+        if (vybaveniRevizeList.Any())
+            vybaveniVM.lastRev = vybaveniRevizeList.First().DateTime;
+
+        else
+            vybaveniVM.lastRev = vybaveniVM.dateBuy;
+
+        vybaveniListVM.Add(vybaveniVM);
+    }
+
+    return Results.Ok(vybaveniListVM);
 });
 
 // DONE
@@ -94,8 +132,13 @@ app.MapPut("/vybaveni/{id}", (Guid id, [FromBody] VybaveniVm updatedItem, PptDbC
 // DONE
 app.MapGet("/vybaveni/{Id}", (Guid Id, PptDbContext db) =>
 {
-    var item = db.Vybavenis.SingleOrDefault(x => x.Id == Id);
-    return item;
+    Vybaveni? hledany = db.Vybavenis
+    .Include(x => x.Revizes)
+    .Include(x => x.Ukons)
+    .SingleOrDefault(x => x.Id == Id);
+
+    var en = hledany?.Adapt<VybaveniSRevizemaVm>();
+    return en;
 }
 );
 

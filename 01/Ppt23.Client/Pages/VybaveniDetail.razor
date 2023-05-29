@@ -7,13 +7,43 @@
 <h5 style="margin: 10px">@vybaveni?.Name</h5>
 <h4 style="margin: 10px"> Price:</h4>
 <h5 style="margin: 10px">@vybaveni?.Price</h5>
+
+    <h4>Seznam revizi</h4>
+    
+    @if (vybaveniSRevizema is not null)
+    {
+        @foreach (var o in vybaveniSRevizema?.Revisions)
+
+        {
+            <h5>Id:</h5>
+            <div>@o.Id</div>
+
+            <h5>Název:</h5>
+            <div>@o.Name</div>
+
+        }
+    
+     <h4>Seznam ukonu</h4>
+        <div>
+        @foreach (var o in vybaveniSRevizema?.Ukons)
+
+        {
+            <h5>Název:</h5>
+            <div>@o.Name</div>
+        }
+        </div>
+    }
+
 <a style="margin: 10px" href="vybaveni"> Vratit se do seznamu vybaveni </a>
 
 @code {
     [Parameter] public Guid Id { get; set; }
     VybaveniVm? vybaveni;
+    VybaveniSRevizemaVm? vybaveniSRevizema;
+
     protected override async Task OnInitializedAsync()
     {
         vybaveni = await Http.GetFromJsonAsync<VybaveniVm>($"vybaveni/{Id}");
+
     }
 }
