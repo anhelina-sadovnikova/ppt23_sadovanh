@@ -43,11 +43,11 @@ public class VybaveniVm
         to.dateBuy = dateBuy;
         to.lastRev = lastRev;
     }
-    public static List<VybaveniVm> VratRandSeznam()
+    public static List<VybaveniVm> VratRandSeznam(int pocet, bool isEmtpyId = false)
     {
         List<VybaveniVm> list = new List<VybaveniVm>();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < pocet; i++)
         {
             VybaveniVm vm = new VybaveniVm();
             vm.Id = Guid.NewGuid();

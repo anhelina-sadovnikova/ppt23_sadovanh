@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<SeedingData>();//for seeding data
 
 var corsAllowedOrigin = builder.Configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
 string? sqlDatabase = builder.Configuration.GetValue<String>("sqlDatabase");
@@ -44,7 +45,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-List<VybaveniVm> seznamVybaveni = VybaveniVm.VratRandSeznam();
+//List<VybaveniVm> seznamVybaveni = VybaveniVm.VratRandSeznam();
 List<RevizeVM> seznamRevizi = RevizeVM.VratRandSeznam(100);
 
 // DONE
@@ -71,6 +72,7 @@ app.MapGet("/revize/{text}", (string text, PptDbContext db) =>
 app.MapGet("/vybaveni", (PptDbContext db) =>
 {
     List<VybaveniVm> vybavenis = db.Vybavenis.ProjectToType<VybaveniVm>().ToList();
+
     return Results.Ok(vybavenis);
 });
 
@@ -109,5 +111,7 @@ app.MapDelete("/vybaveni/{Id}", (Guid Id, PptDbContext db) =>
     return Results.Ok();
 }
 );
+
+await app.Services.CreateScope().ServiceProvider.GetRequiredService<SeedingData>().SeedData();
 
 app.Run();
