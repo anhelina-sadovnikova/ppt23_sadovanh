@@ -134,7 +134,7 @@ app.MapGet("/vybaveni/{Id}", (Guid Id, PptDbContext db) =>
 {
     Vybaveni? hledany = db.Vybavenis
     .Include(x => x.Revizes)
-    .Include(x => x.Ukons)
+    .Include(x => x.Ukons).ThenInclude(x => x.Pracovnik)
     .SingleOrDefault(x => x.Id == Id);
 
     var en = hledany?.Adapt<VybaveniSRevizemaVm>();

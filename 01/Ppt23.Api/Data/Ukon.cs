@@ -8,7 +8,9 @@ public class Ukon
 {
     public Guid Id { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "";
+
+    public string Detail { get; set; } = "";
 
     public DateTime DateTime { get; set; }
 
@@ -16,5 +18,7 @@ public class Ukon
 
     public Vybaveni Vybaveni { get; set; } = null!;
 
+    public Guid PracovnikId { get; set; }
+    public Pracovnik Pracovnik { get; set; } = null!;
 
 }

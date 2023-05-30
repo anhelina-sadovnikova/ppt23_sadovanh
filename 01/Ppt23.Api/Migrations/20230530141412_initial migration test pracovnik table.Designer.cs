@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ppt23.Api.Data;
 
@@ -10,9 +11,11 @@ using Ppt23.Api.Data;
 namespace Ppt23.Api.Migrations
 {
     [DbContext(typeof(PptDbContext))]
-    partial class PptDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230530141412_initial migration test pracovnik table")]
+    partial class initialmigrationtestpracovniktable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
@@ -68,15 +71,11 @@ namespace Ppt23.Api.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Detail")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("PracovnikId")
+                    b.Property<Guid?>("PracovnikId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("VybaveniId")
@@ -125,19 +124,15 @@ namespace Ppt23.Api.Migrations
 
             modelBuilder.Entity("Ppt23.Api.Data.Ukon", b =>
                 {
-                    b.HasOne("Ppt23.Api.Data.Pracovnik", "Pracovnik")
+                    b.HasOne("Ppt23.Api.Data.Pracovnik", null)
                         .WithMany("Ukons")
-                        .HasForeignKey("PracovnikId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PracovnikId");
 
                     b.HasOne("Ppt23.Api.Data.Vybaveni", "Vybaveni")
                         .WithMany("Ukons")
                         .HasForeignKey("VybaveniId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Pracovnik");
 
                     b.Navigation("Vybaveni");
                 });

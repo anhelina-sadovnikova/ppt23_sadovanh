@@ -13,5 +13,7 @@ public class PptDbContext : DbContext
     public DbSet<Vybaveni> Vybavenis => Set<Vybaveni>();
     public DbSet<Revize> Revisions => Set<Revize>();
     public DbSet<Ukon> Ukons => Set<Ukon>();
+    public DbSet<Pracovnik> Workers => Set<Pracovnik>();
+
 
 }
