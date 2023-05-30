@@ -1,58 +1,65 @@
 ﻿using Mapster;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Ppt23.Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Numerics;
 
 namespace Ppt23.Api.Data
 {
     public class SeedingData
     {
-        private readonly PptDbContext _db;
+        readonly PptDbContext _db;
 
         public SeedingData(PptDbContext db)
         {
-            _db = db;
+            this._db = db;
         }
         public async Task SeedData()
         {
-            if (!_db.Vybavenis.Any())
+            if (!_db.Vybavenis.Any())//není žádné vybavení - nějaké přidáme
             {
-                var vybaveniLis = VybaveniVm.VratRandSeznam(10, isEmtpyId: false).Select(x => x.Adapt<Vybaveni>()).ToList();
+                // vytvoř x vybaveních
+                //.. přidej do db
 
-                foreach (var vybaveni in vybaveniLis)
-                {
-                    int numOfRevizes = Random.Shared.Next(0, 10);
-                    for (int i = 0; i < numOfRevizes; i++)
+                var vybaveniLis = VybaveniVm.VratRandSeznam(10, isEmtpyId: false).Select(x => x.Adapt<Vybaveni>());
+                _db.Vybavenis.AddRange(vybaveniLis);
+
+                int pocetPracovniku = Random.Shared.Next(2, 5);
+                  for (int i = 0; i < pocetPracovniku; i++)
                     {
-                        Revize rev = new()
+                        Pracovnik pracovnik = new()
                         {
-                            Name = RandomString(Random.Shared.Next(5, 15)),
-                            DateTime = vybaveni.dateBuy.AddDays(Random.Shared.Next(0, 3 * 365)),
+                            Name = "Ukon Name",
+                            JobTitle = RandomString(56).Replace("x", " "),
+
                         };
-                        vybaveni.Revizes.Add(rev);
+                        _db.Workers.Add(pracovnik);
                     }
 
-                    foreach (var num in Enumerable.Range(0, Random.Shared.Next(0, 20)))
-                    {
-                        Ukon ukon = new()
-                        {
-                            DateTime = vybaveni.dateBuy.AddDays(Random.Shared.Next(0, 3 * 365)),
-                            Detail = RandomString(Random.Shared.Next(5, 350))
-                        };
-                        vybaveni.Ukons.Add(ukon);
-                    }
-                    _db.Vybavenis.AddRange(vybaveniLis);
-                }       
-            }
-            //PRACOVNIK
-            for (int i = 0; i < 5; i++)
-            {
-                Pracovnik pracovnik = new()
-                {
-                    Name = RandomString(Random.Shared.Next(5, 15)),
-                    JobTitle = RandomString(Random.Shared.Next(5, 7))
-                };
-                _db.Workers.Add(pracovnik);
-            }
+                await _db.SaveChangesAsync();
 
+                List<Pracovnik> pracovnikList = _db.Workers.ToList();
+                List<Vybaveni> vybaveniList = _db.Vybavenis.ToList();
+
+                foreach (Vybaveni vyb in vybaveniList)
+                {
+                    int pocetUkonu = Random.Shared.Next(5, 10);
+                    for (int i = 0; i < pocetUkonu; i++)
+                    {
+                        Ukon uk = new()
+                        {
+                            Name = "Ukon Name",
+                            DateTime = DateTime.UtcNow.AddDays(Random.Shared.Next(-100, -1)),
+                            Detail = RandomString(56),
+                            VybaveniId = vyb.Id,
+                            PracovnikId = pracovnikList[Random.Shared.Next(pocetPracovniku)].Id
+                        };
+                        _db.Ukons.Add(uk);
+                    }
+                }
+            }
             await _db.SaveChangesAsync();
         }
         public static string RandomString(int length) =>
