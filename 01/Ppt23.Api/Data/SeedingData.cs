@@ -12,6 +12,8 @@ namespace Ppt23.Api.Data
     {
         readonly PptDbContext _db;
 
+        readonly DataGenerator data;
+
         public SeedingData(PptDbContext db)
         {
             this._db = db;
@@ -23,8 +25,16 @@ namespace Ppt23.Api.Data
                 // vytvoř x vybaveních
                 //.. přidej do db
 
-                var vybaveniLis = VybaveniVm.VratRandSeznam(10, isEmtpyId: false).Select(x => x.Adapt<Vybaveni>());
-                _db.Vybavenis.AddRange(vybaveniLis);
+                // var vybaveniLis = VybaveniVm.VratRandSeznam(10, isEmtpyId: false).Select(x => x.Adapt<Vybaveni>());
+                // var vybaveniLis = new List<VybaveniVm>();
+                //vybaveniLis.AddRange(results);
+                //vybaveniLis.Select(x => x.Adapt<Vybaveni>());
+
+                var results = data.GenerateVybavenis().Take(10).Select(x => x.Adapt<Vybaveni>());
+
+                //results.Select(x => x.Adapt<Vybaveni>());
+
+                _db.Vybavenis.AddRange(results);
 
                 int pocetPracovniku = Random.Shared.Next(2, 5);
                   for (int i = 0; i < pocetPracovniku; i++)
