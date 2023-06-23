@@ -7,8 +7,13 @@ public class UkonVM
 
     public string Name { get; set; } = "";
 
-    public Guid VybaveniID { get; set; }
+    public Guid VybaveniId { get; set; }
 
     public DateTime DateTime { get; set; }
+
+    public string Detail { get; set; } = "";
+
+    public Guid PracovnikId { get; set; }
+
 
 }

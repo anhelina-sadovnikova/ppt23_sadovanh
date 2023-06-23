@@ -14,9 +14,10 @@ namespace Ppt23.Api.Data
 
         readonly DataGenerator data;
 
-        public SeedingData(PptDbContext db)
+        public SeedingData(PptDbContext db, DataGenerator data)
         {
             this._db = db;
+            this.data = data;
         }
         public async Task SeedData()
         {
@@ -25,50 +26,29 @@ namespace Ppt23.Api.Data
                 // vytvoř x vybaveních
                 //.. přidej do db
 
-                // var vybaveniLis = VybaveniVm.VratRandSeznam(10, isEmtpyId: false).Select(x => x.Adapt<Vybaveni>());
-                // var vybaveniLis = new List<VybaveniVm>();
-                //vybaveniLis.AddRange(results);
-                //vybaveniLis.Select(x => x.Adapt<Vybaveni>());
-
                 var results = data.GenerateVybavenis().Take(10).Select(x => x.Adapt<Vybaveni>());
-
-                //results.Select(x => x.Adapt<Vybaveni>());
-
                 _db.Vybavenis.AddRange(results);
 
-                int pocetPracovniku = Random.Shared.Next(2, 5);
-                  for (int i = 0; i < pocetPracovniku; i++)
-                    {
-                        Pracovnik pracovnik = new()
-                        {
-                            Name = "Ukon Name",
-                            JobTitle = RandomString(56).Replace("x", " "),
-
-                        };
-                        _db.Workers.Add(pracovnik);
-                    }
+                //pracovniky
+                var resultsWorkers = data.GenerateWorkers().Take(5).Select(x => x.Adapt<Pracovnik>());
+                _db.Workers.AddRange(resultsWorkers);
 
                 await _db.SaveChangesAsync();
 
                 List<Pracovnik> pracovnikList = _db.Workers.ToList();
                 List<Vybaveni> vybaveniList = _db.Vybavenis.ToList();
 
+                //ukony
                 foreach (Vybaveni vyb in vybaveniList)
                 {
-                    int pocetUkonu = Random.Shared.Next(5, 10);
-                    for (int i = 0; i < pocetUkonu; i++)
-                    {
-                        Ukon uk = new()
-                        {
-                            Name = "Ukon Name",
-                            DateTime = DateTime.UtcNow.AddDays(Random.Shared.Next(-100, -1)),
-                            Detail = RandomString(56),
-                            VybaveniId = vyb.Id,
-                            PracovnikId = pracovnikList[Random.Shared.Next(pocetPracovniku)].Id
-                        };
-                        _db.Ukons.Add(uk);
-                    }
-                }
+                        var resultsUkons = data.GenerateUkons().Select(x => x.Adapt<Ukon>());
+                            foreach (Ukon uk in resultsUkons)
+                            {
+                                uk.VybaveniId = vyb.Id;
+                                uk.PracovnikId = pracovnikList[1].Id;
+                            }
+                    _db.Ukons.AddRange(resultsUkons);
+                }               
             }
             await _db.SaveChangesAsync();
         }
