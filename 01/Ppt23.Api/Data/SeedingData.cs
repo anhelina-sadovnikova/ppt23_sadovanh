@@ -41,16 +41,18 @@ namespace Ppt23.Api.Data
                 //ukony
                 foreach (Vybaveni vyb in vybaveniList)
                 {
-                        var resultsUkons = data.GenerateUkons().Select(x => x.Adapt<Ukon>());
+                        var resultsUkons = data.GenerateUkons().Take(2).Select(x => x.Adapt<Ukon>());
+                    List<Ukon> newList = new List<Ukon>();
                             foreach (Ukon uk in resultsUkons)
                             {
                                 uk.VybaveniId = vyb.Id;
                                 uk.PracovnikId = pracovnikList[1].Id;
+                                newList.Add(uk);
                             }
-                    _db.Ukons.AddRange(resultsUkons);
-                }               
+                        _db.Ukons.AddRange(newList);
+                }
+                await _db.SaveChangesAsync();
             }
-            await _db.SaveChangesAsync();
         }
         public static string RandomString(int length) =>
            new(Enumerable.Range(0, length).Select(_ =>
