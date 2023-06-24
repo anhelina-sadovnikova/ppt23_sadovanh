@@ -1,4 +1,6 @@
 ﻿@inherits LayoutComponentBase
+@inject IStringLocalizer<english> _enlocalizer
+@inject IStringLocalizer<czech> _czlocalizer
 
 <main>
    <nav class="navbar navbar-expand-lg">
@@ -9,16 +11,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Domov</a>
+                    <a class="nav-link" href="#">@GetLocalizedString("Domov")</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="vybaveni">Vybavení</a>
+                    <a class="nav-link" href="vybaveni">@GetLocalizedString("Vybavení")</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="revize/ahoj">Revize</a>
+                    <a class="nav-link" href="revize/ahoj">@GetLocalizedString("Revize")</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="https://www.fbmi.cvut.cz/">FBMI</a>
+                </li>
+                <li class="nav-item">
+                    <button @onclick="SwitchToEnglish">en</button>
+                </li>
+                <li class="nav-item">
+                    <button @onclick="SwitchToCzech">cz</button>
                 </li>
             </ul>
         </div>
@@ -26,3 +34,28 @@
 @Body 
         
 </main>
+
+@code {
+    public IStringLocalizer _currentLocalizer;
+    protected override void OnInitialized()
+    {
+        _currentLocalizer = _czlocalizer;
+    }
+
+    private void SwitchToEnglish()
+    {
+        _currentLocalizer = _enlocalizer;
+        StateHasChanged();
+    }
+
+    private void SwitchToCzech()
+    {
+        _currentLocalizer = _czlocalizer;
+        StateHasChanged();
+    }
+
+    private LocalizedString GetLocalizedString(string key)
+    {
+        return _currentLocalizer[key];
+    }
+}

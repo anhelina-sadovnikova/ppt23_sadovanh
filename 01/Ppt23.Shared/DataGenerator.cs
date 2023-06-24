@@ -6,8 +6,8 @@ namespace Ppt23.Shared;
 public class DataGenerator
     {
         Faker<VybaveniVm> VybaveniFakeDev;
-    Faker<VybaveniVm> VybaveniFakeProd;
-    Faker<PracovnikVM> PracovnikFake;
+        Faker<VybaveniVm> VybaveniFakeProd;
+        Faker<PracovnikVM> PracovnikFake;
         Faker<UkonVM> UkonFake;
 
     public DataGenerator()
@@ -24,7 +24,7 @@ public class DataGenerator
                 .RuleFor(u => u.Price, f => f.Random.Int(5000, 10000))
                 .RuleFor(u => u.dateBuy, f => f.Date.Past(2));
 
-        PracovnikFake = new Faker<PracovnikVM>()
+            PracovnikFake = new Faker<PracovnikVM>()
                 .RuleFor(u => u.Name, f => f.Name.FullName())
                 .RuleFor(u => u.JobTitle, f => f.PickRandom<JobTitle>());
 

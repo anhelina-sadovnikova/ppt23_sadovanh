@@ -42,7 +42,7 @@ namespace Ppt23.Api.Data
                 foreach (Vybaveni vyb in vybaveniList)
                 {
                         var resultsUkons = data.GenerateUkons().Take(2).Select(x => x.Adapt<Ukon>());
-                    List<Ukon> newList = new List<Ukon>();
+                        List<Ukon> newList = new List<Ukon>();
                             foreach (Ukon uk in resultsUkons)
                             {
                                 uk.VybaveniId = vyb.Id;

@@ -9,5 +9,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 var httpClientBaseAddress = builder.Configuration["HttpClientBaseAddress"];
 ArgumentNullException.ThrowIfNull(httpClientBaseAddress);
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(httpClientBaseAddress) });
+builder.Services.AddLocalization();//miltilingual app
 
 await builder.Build().RunAsync();

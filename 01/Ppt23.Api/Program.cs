@@ -14,7 +14,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<SeedingData>();//for seeding data
 builder.Services.AddTransient<DataGenerator>();//bogus
-//builder.Services.AddLocalization();//miltilingual app
 
 var corsAllowedOrigin = builder.Configuration.GetSection("CorsAllowedOrigins").Get<string[]>();
 string? sqlDatabase = builder.Configuration.GetValue<String>("sqlDatabase");
